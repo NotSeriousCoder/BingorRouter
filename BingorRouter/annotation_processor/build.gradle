@@ -1,0 +1,39 @@
+//apply plugin: 'java-library'
+//
+//dependencies {
+//    implementation fileTree(dir: 'libs', include: ['*.jar'])
+//    annotationProcessor 'com.google.auto.service:auto-service:1.0-rc6'
+//    compileOnly 'com.google.auto.service:auto-service:1.0-rc6'
+//    implementation project(path: ':annotation')
+//}
+//
+//tasks.withType(JavaCompile) {
+//    options.encoding = "UTF-8"
+//}
+//
+//sourceCompatibility = "1.8"
+//targetCompatibility = "1.8"
+//
+
+
+
+apply plugin: 'java-library'
+
+dependencies {
+    // AS 3.4.1以下
+//    implementation 'com.google.auto.service:auto-service:1.0-rc6'
+//    implementation 'com.squareup:javapoet:1.9.0'
+    // AS 3.4.1及以上
+    annotationProcessor 'com.google.auto.service:auto-service:1.0-rc6'
+    compileOnly 'com.google.auto.service:auto-service:1.0-rc6'
+
+
+    implementation project(':annotation')
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"

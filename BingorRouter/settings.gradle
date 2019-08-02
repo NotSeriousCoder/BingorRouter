@@ -1,0 +1,2 @@
+include ':app', ':annotation', ':annotation_processor', ':java_test', ':router', ':testlib'
+rootProject.name='BingorRouter'
