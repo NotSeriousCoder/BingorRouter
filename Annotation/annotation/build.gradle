@@ -1,4 +1,21 @@
 apply plugin: 'java-library'
+apply plugin: 'com.novoda.bintray-release'
+
+//推送到Bintray配置
+publish {
+    //你的账户bintray下某个组织id
+    userOrg = 'Bingor'
+    //Maven仓库下库的包名,一本与包名相同
+    groupId = 'com.bingor.annotation'
+    //项目名称
+    artifactId = 'BingorRouterAnnotation'
+    //版本号
+    publishVersion = '0.0.1'
+    //项目介绍，可以不写
+    desc = 'xxx'
+    //项目主页，可以不写
+    website = 'xxx'
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -6,3 +23,8 @@ dependencies {
 
 sourceCompatibility = "7"
 targetCompatibility = "7"
+
+//gradlew clean build bintrayUpload -PbintrayUser=givemeabug -PbintrayKey=ee95c270e1127bc0fccff6222c3659232f0881a3 -PdryRun=false
+//
+//
+//Could not create package : HTTP/1.1 404 Not Found [message:Subject  was not found]
