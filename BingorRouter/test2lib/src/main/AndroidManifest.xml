@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.bingor.test2lib">
+
+    <application>
+        <activity android:name=".Avtivity4Test2Lib"></activity>
+    </application>
+
+</manifest>

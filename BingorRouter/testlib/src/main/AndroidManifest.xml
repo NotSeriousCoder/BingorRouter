@@ -1,2 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.bingor.testlib" />
+    package="com.bingor.testlib">
+
+    <application>
+        <activity android:name=".Avtivity4TestLib"></activity>
+        <activity android:name=".Avtivity2222"></activity>
+    </application>
+
+</manifest>

@@ -1,5 +1,6 @@
 package com.bingor.annotation_processor;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -347,9 +348,10 @@ public class JavaFileHelper {
         }
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            BufferedReader br = new BufferedReader(new FileReader(file));
-
+            FileReader fr = new FileReader(file);
+            BufferedReader br = new BufferedReader(fr);
             String line = "";
+            br.mark((int) (file.length() + 1));
             do {
                 // Key.java 里面已经有的key，不要重复写入，需要从keys里面去掉
                 String delKey = null;
@@ -364,24 +366,27 @@ public class JavaFileHelper {
                     }
                 }
                 keys.remove(delKey);
-//                if (delKey != null || line.equals("\r\n")) {
-//                    continue;
-//                }
-
-                if (line.replace("\r\n", "").trim().equals("}")) {
+            } while (!line.contains("----------------- File end -----------------"));
+            br.reset();
+            do {
+                line = br.readLine();
+                baos.write(line.getBytes());
+                baos.write("\r\n".getBytes());
+                if (line.contains("----------------- Keys is under here -----------------")) {
                     for (String key : keys.keySet()) {
                         baos.write(("   public static final String " + key + " = \"" + keys.get(key) + "\";").getBytes());
                         baos.write("\r\n".getBytes());
                     }
                 }
-                baos.write(line.getBytes());
-                baos.write("\r\n".getBytes());
-            } while (line != null);
-
+            } while (!line.contains("----------------- File end -----------------"));
 
             if (br != null) {
                 br.close();
                 br = null;
+            }
+            if (fr != null) {
+                fr.close();
+                fr = null;
             }
             ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
             FileOutputStream fos = new FileOutputStream(file);
@@ -407,42 +412,53 @@ public class JavaFileHelper {
             LogUtil.log(e.getCause().toString());
         } catch (IOException e) {
             e.printStackTrace();
-            LogUtil.log(e.getCause().toString());
+            LogUtil.log(e.toString());
+        } finally {
+            LogUtil.log("Keys write alreadly -- " + System.currentTimeMillis());
         }
     }
 
-    public static void addKey(File file, String key) {
+    public static void addAdderName(File file, String name) {
         if (file == null || !file.exists()) {
             return;
         }
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            BufferedReader br = new BufferedReader(new FileReader(file));
-
-
+            FileReader fr = new FileReader(file);
+            BufferedReader br = new BufferedReader(fr);
             String line = "";
+            boolean needAdd = true;
+            br.mark((int) (file.length() + 1));
             do {
+                // Key.java 里面已经有的key，不要重复写入，需要从keys里面去掉
                 line = br.readLine();
                 if (line == null) {
                     break;
                 }
-                if (line.contains(key) || line.equals("\r\n")) {
-                    continue;
+                if (line.contains(name)) {
+                    needAdd = false;
+                    break;
                 }
-                if (line.replace("\r\n", "").trim().equals("}")) {
-                    baos.write(("   public static final String " + key.toUpperCase() + " = \"" + key + "\";").getBytes());
-                    baos.write("\r\n".getBytes());
-                }
+            } while (!line.contains("----------------- File end -----------------"));
+            br.reset();
+            do {
+                line = br.readLine();
                 baos.write(line.getBytes());
                 baos.write("\r\n".getBytes());
-            } while (line != null);
-
+                if (needAdd && line.contains("// ----------------- AdderName is under here -----------------")) {
+                        baos.write(("   public static final String " + name.toUpperCase() + " = \"" + name + "\";").getBytes());
+                        baos.write("\r\n".getBytes());
+                }
+            } while (!line.contains("----------------- File end -----------------"));
 
             if (br != null) {
                 br.close();
                 br = null;
             }
-//            LogUtil.log("read complie");
+            if (fr != null) {
+                fr.close();
+                fr = null;
+            }
             ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
             FileOutputStream fos = new FileOutputStream(file);
             byte[] data = new byte[1024];
@@ -451,29 +467,28 @@ public class JavaFileHelper {
                 fos.write(data, 0, len);
                 fos.flush();
             }
-
             if (fos != null) {
                 fos.flush();
                 fos.close();
             }
-
             if (bais != null) {
                 bais.close();
             }
-
             if (baos != null) {
                 baos.flush();
                 baos.close();
             }
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             LogUtil.log(e.getCause().toString());
         } catch (IOException e) {
             e.printStackTrace();
-            LogUtil.log(e.getCause().toString());
+            LogUtil.log(e.toString());
+        } finally {
+            LogUtil.log("Keys write alreadly -- " + System.currentTimeMillis());
         }
     }
+
 
     private static File findMatchFileByPackageName(String packageName) {
         try {
